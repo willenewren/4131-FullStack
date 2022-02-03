@@ -1,0 +1,14 @@
+{
+  "name": "newre002_project",
+  "version": "1.0.0",
+  "description": "project",
+  "main": "mongo_setup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "newre002",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^4.2.2"
+  }
+}
