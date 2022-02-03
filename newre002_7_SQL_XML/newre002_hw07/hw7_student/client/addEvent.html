@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--   <link rel="stylesheet" href="/client/css/style.css">   -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style type="text/css">
+      #userName{
+        float: right;
+        color: white;
+        margin-right: 5%;
+        position: relative;
+        top: 15px;;
+      }
+      .navbar {
+        background-color: #563d7c;
+      }
+      .navbar-default .navbar-nav li a{
+        color: #eee;
+      }
+      .navbar-default .navbar-nav li a:hover{
+        color: white;
+      }
+      th, td{
+        text-align: center;
+      }
+      thead {
+        background-color: #e57373;
+    color: white;
+      }
+
+    </style>
+  </head>
+  <header>
+    <nav  class="navbar navbar-default">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+         <li><a href="/"><b>Home</b></a></li>
+          <li><a href="/admin"><b>Admin</b></a></li>
+         <li><a href="/allEvents"><b>All Events</b></a></li>
+         <li><a href="/schedule"><b>Schedule</b></a></li>
+         <li><a href="/addEvent"><b>Add Event</b></a></li>
+
+         <li><a href="/logout" onclick="logout()">
+           <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+         </a>
+        </ul>
+          <p id="userName">Welcome</p>
+      </div>
+    </nav>
+  </header>
+  <body>
+
+    <br>
+    <div class="container mb-5">
+      <form name="addEvent" method="post"
+            id="addEvent">
+        <div class="form-group">
+          <label for="nameInput">Event</label>
+          <input type="text" id="nameInput" class="form-control" name="event"
+                 pattern="[a-zA-Z0-9\s]+" title="Event must be alphanumeric"
+                 required="">
+          <small id="eventHelp" class="form-text text-muted">
+            Event name must be alphanumeric</small>
+        </div>
+        <div class="form-group">
+          <label for="dayInput">Day of Week</label>
+          <select id="dayInput" class="form-control" name="day">
+            <option>
+              Sunday
+            </option>
+            <option>
+              Monday
+            </option>
+            <option>
+              Tuesday
+            </option>
+            <option>
+              Wednesday
+            </option>
+            <option>
+              Thursday
+            </option>
+            <option>
+              Friday
+            </option>
+            <option>
+              Saturday
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="startTimeInput">Start</label>
+          <input id="startTimeInput" type="time" class="form-control"
+                 name="start" required="">
+        </div>
+        <div class="form-group">
+          <label for="endTimeInput">End</label>
+          <input id="endTimeInput" type="time" class="form-control"
+                 name="end" required="">
+        </div>
+        <div class="form-group">
+          <label for="phoneInput">Phone</label>
+          <input id="phoneInput" type="text" class="form-control" name="phone"
+                 required="">
+        </div>
+        <div class="form-group">
+          <label for="locationInput">Location</label>
+          <input type="text" class="form-control" name="location"
+                 id="locationInput" required="" value="">
+        </div>
+        <div class="form-group">
+          <label for="extraInput">Extra Info</label>
+          <input id="extraInput" type="text" class="form-control" name="info"
+                 required="">
+        </div>
+        <div class="form-group">
+          <label for="urlInput">Enter URL for the Extra Info</label>
+          <input id="urlInput" type="url" class="form-control" name="url"
+                 required="">
+        </div>
+        <button type="button" class="btn btn-block btn-primary" onclick="newEvent()">Submit</button>
+        <button type="button" onclick="checkOverlap()" data-toggle="tooltip"
+                data-placement="top" class="btn btn-block btn-secondary"
+                title=
+                      "Checks if this event interferes with any on your existing schedule"
+        >Check for Overlap</button>
+        <div class="container mt-3" id="overlapAlert"></div>
+      </form>
+    </div>
+    <script>
+
+    function newEvent(){
+        console.log("called newEvent");
+        var name= document.getElementById("nameInput").value;
+        var day= document.getElementById("dayInput").value;
+        var start= document.getElementById("startTimeInput").value;
+        var end= document.getElementById("endTimeInput").value;
+        var phone= document.getElementById("phoneInput").value;
+        var location= document.getElementById("locationInput").value;
+        var info= document.getElementById("extraInput").value;
+        var url= document.getElementById("urlInput").value;
+        $.post('newEvent',
+        {"name":name, "day":day, "start":start, "end":end, "phone":phone, "location":location, "info":info, "url":url},
+        (data)=>{
+          console.log(data);
+          if(data.status==="success"){
+            window.location.href = '/allEvents';
+            //redirect to all events page on success response
+          }
+          else{
+            console.log("error");
+          }
+        })
+    }
+
+     function intersectAlert(count, events) {
+       let listItems = events.map((event) =>
+         `<li class="list-group-item">${event.name} from ${event.start} to ${event.end}`)
+                             .join('');
+       let newHtml = `
+         <div class="alert alert-warning" role="alert" >
+           This event interferes with ${count} others:
+           <ul class="list-group">
+             ${listItems}
+           </ul>
+         </div>
+       `;
+       $('#overlapAlert').html(newHtml);
+
+     }
+
+     function noIntersectAlert() {
+       let newHtml = `
+         <div class="alert alert-success" role="alert">
+           This event does not interfere with any others.
+         </div>`;
+       $('#overlapAlert').html(newHtml);
+     }
+     //TODO: if doing the bonus, complete checking for overlap
+     function checkOverlap() {
+       return;
+     }
+
+     function logout(){
+       $.get("logout", function(err){
+          if(err){throw err;}
+       });
+       window.location.href = '/login';
+     }
+     $.get('getCurrentUser', function(data){
+       console.log("printing current user");
+       console.log(data);
+       document.getElementById("userName").innerHTML += " " + data;
+     });
+
+    </script>
+
+  </body>
+</html>

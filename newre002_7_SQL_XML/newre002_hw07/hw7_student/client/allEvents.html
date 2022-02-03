@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang= "en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!--   <link rel="stylesheet" href="/client/css/style.css">   -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style type="text/css">
+    #userName{
+      float: right;
+      color: white;
+      margin-right: 5%;
+      position: relative;
+      top: 15px;
+    }
+    .navbar {
+      background-color: #563d7c;
+    }
+    .navbar-default .navbar-nav li a{
+      color: #eee;
+    }
+    .navbar-default .navbar-nav li a:hover{
+      color: white;
+    }
+    th, td{
+      text-align: center;
+    }
+    thead {
+      background-color: #e57373;
+  color: white;
+    }
+
+  </style>
+</head>
+  <header>
+    <nav  class="navbar navbar-default">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+         <li><a href="/"><b>Home</b></a></li>
+          <li><a href="/admin"><b>Admin</b></a></li>
+         <li><a href="/allEvents"><b>All Events</b></a></li>
+         <li><a href="/schedule"><b>Schedule</b></a></li>
+         <li><a href="/addEvent"><b>Add Event</b></a></li>
+
+         <li><a href="/logout" onclick="logout()">
+           <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+         </a>
+        </ul>
+          <p id="userName">Welcome</p>
+      </div>
+
+    </nav>
+  </header>
+  <body>
+    <div class="container">
+      <table class="table table-striped" id="scheduleTable">
+        <thead>
+          <tr>
+            <th scope="col">day</th>
+            <th scope="col">Event</th>
+            <th scope="col">Time</th>
+            <th scope="col">Location</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Extra Information</th>
+          </tr>
+        </thead>
+        <tbody id="day_event"></tbody>
+      </table>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      $.get('listEvents', function(data){
+
+        writeScheduleHtml_all(data);
+      });
+      $.get('getCurrentUser', function(data){
+        console.log("printing current user");
+        console.log(data);
+        document.getElementById("userName").innerHTML += " " + data;
+      });
+    });
+
+    function writeScheduleHtml_all(jsonObj){
+       console.log("write sched");
+       //console.log(jsonObj);
+       console.log("******************************");
+         var tableString = "";
+         var c=0;
+
+         var day_event = JSON.parse(jsonObj);
+         for(c=0; c<day_event.length; c++){ //iterate through the events of current day
+           tableString += '<tr>'
+           tableString += '<td>' + day_event[c].event_event + '</td>';
+           tableString += '<td>' + day_event[c].event_start + '-'+day_event[c].event_end+'</td>';
+           tableString += '<td>' + day_event[c].event_phone + '</td>';
+           tableString += '<td>' + day_event[c].event_location + '</td>';
+           //tableString += '<td>' + day_event[c].event_info + '</td>';
+           tableString += '<td><a href="' + day_event[c].event_url + '"">' + day_event[c].event_info + '</a></td>';
+           tableString += '</tr>'
+         }
+         document.getElementById("day_event").innerHTML = tableString;
+    }
+
+    function logout(){
+      $.get("logout", function(err){
+         if(err){throw err;}
+      });
+      window.location.href = '/login';
+    }
+
+    </script>
+  </body>
+</html>

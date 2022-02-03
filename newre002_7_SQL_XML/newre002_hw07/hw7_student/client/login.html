@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-
+BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous"></script>
+
+
+      <title>Welcome to Node.js</title>
+      <style type="text/css">
+              .jumbotron { text-align: center; }
+            </style>
+  </head>
+  <body>
+      <form id="myForm">
+        <label for="username">User:</label><br>
+        <input type="text" id="username" placeholder ="username" required><br>
+        <label for="password">Password:</label><br>
+        <input type="text" id="password" placeholder = "password" required><br>
+        <input type = "button" value="Login", onclick="login_ajax()">
+      </form>
+      <div id= "errmsg">
+
+      </div>
+      <script>
+        function login_ajax(){
+            console.log("logajax called");
+            var un= document.getElementById("username").value;
+            var pw = document.getElementById("password").value;
+            $.post('login_req',
+              {"username": un, "password":pw},
+              (data)=>{
+                //console.log(data);
+                if(data.status==="success"){
+                  window.location.href = '/allEvents';
+                  //redirect to all events page on success response
+                }
+                else{
+                  console.log(data.status);
+                  document.getElementById("errmsg").innerHTML = data.status;
+                }
+
+              });
+
+        }
+
+      </script>
+  </body>
+
+</html>
